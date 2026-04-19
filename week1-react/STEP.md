@@ -20,20 +20,89 @@
 `useState`, `useEffect` 등 React 훅을 조합해 **재사용 가능한 로직**을 만드는 함수다.
 반드시 이름이 `use`로 시작해야 한다.
 
+#### 왜 커스텀 훅으로 분리하나?
+
 ```js
-// ❌ 컴포넌트 안에 인증 로직 직접 구현 → 재사용 불가
+// ❌ 컴포넌트 안에 인증 로직 직접 구현
 function App() {
   const [user, setUser] = useState(null);
-  const login = async (name, email) => { /* 긴 로직 */ };
-  ...
-}
 
-// ✅ 커스텀 훅으로 분리 → 어느 컴포넌트에서든 재사용 가능
-function App() {
-  const { user, isLoggedIn, login, logout } = useAuth();
-  ...
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (token) getMe().then(setUser).catch(...);
+  }, []);
+
+  const login = async (name, email) => {
+    let foundUser = await findUserByName(name);
+    if (!foundUser) foundUser = await signUp(name, email);
+    const { token } = await loginWithUserId(foundUser.id);
+    localStorage.setItem('token', token);
+    setUser(foundUser);
+  };
+
+  const logout = () => {
+    localStorage.removeItem('token');
+    setUser(null);
+  };
+
+  // 이 모든 코드가 App 컴포넌트 안에 있으면...
+  // → App이 너무 커진다
+  // → 다른 컴포넌트에서 로그인 상태가 필요할 때 재사용이 불가능하다
+  return <div>...</div>;
 }
 ```
+
+```js
+// ✅ 커스텀 훅으로 분리
+function App() {
+  const { user, isLoggedIn, login, logout } = useAuth();
+  // 인증 로직이 어떻게 동작하는지 App은 몰라도 된다
+  // 필요한 값과 함수만 꺼내서 쓰면 된다
+  return <div>...</div>;
+}
+```
+
+#### 커스텀 훅의 규칙
+
+- 이름은 반드시 `use`로 시작해야 한다 (`useAuth`, `useForm`, `useFetch` 등)
+- React 훅(`useState`, `useEffect` 등)을 내부에서 자유롭게 사용할 수 있다
+- 일반 함수와 다르게, React가 이 함수를 훅으로 인식해 상태 관리를 연결해준다
+
+> "`use`로 시작하지 않으면 React가 훅으로 인식하지 못해 내부에서 `useState` 등을 사용할 때 에러가 납니다."
+
+#### 커스텀 훅 vs 일반 함수
+
+| | 커스텀 훅 | 일반 함수 |
+|---|---|---|
+| 이름 | `use`로 시작 | 제한 없음 |
+| React 훅 사용 | ✅ 가능 | ❌ 불가 |
+| 상태(state) 보유 | ✅ 가능 | ❌ 불가 |
+| 사용 위치 | 컴포넌트 / 다른 훅 내부 | 어디서든 |
+| 예시 | `useAuth`, `useEffect` | `loginWithUserId`, `signUp` |
+
+---
+
+### loginWithUserId로 토큰을 받는 이유
+
+이 앱의 백엔드는 **비밀번호 인증이 없다.** `userId`를 알고 있다는 것 자체가 인증이다.
+
+```
+1. findUserByName('홍길동')
+   → GET /users/search?name=홍길동
+   → 응답: { id: 3, name: '홍길동' }
+
+2. loginWithUserId(3)
+   → POST /users/login { userId: 3 }
+   → 응답: { token: 'eyJ...' }   ← 서버가 JWT 토큰 발급
+
+3. const { token } = await loginWithUserId(foundUser.id)
+   → 응답 객체에서 token만 구조 분해로 꺼냄
+   → localStorage.setItem('token', token) 으로 저장
+```
+
+> "실제 서비스라면 비밀번호나 OAuth 인증이 추가되겠지만, 이 강의에서는 인증 흐름 자체를 익히는 데 집중하기 위해 단순화한 구조입니다."
+
+---
 
 ### localStorage + useState 동기화
 

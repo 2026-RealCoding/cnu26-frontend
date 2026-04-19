@@ -18,7 +18,10 @@ export default function ProductList() {
   //     false로 설정하면 데이터 로딩 전에 빈 목록이 잠깐 보이는 깜빡임이 생깁니다.
   //   - error: 오류가 없으면 null, 있으면 오류 메시지 문자열로 사용합니다.
   // ============================================================
-
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  
   const [query, setQuery] = useState(DEFAULT_QUERY);
   const [inputValue, setInputValue] = useState(DEFAULT_QUERY);
 
@@ -42,7 +45,21 @@ export default function ProductList() {
   //   4) .catch(err => ...): 실패 시 오류 메시지 저장 + 로딩 종료
   //   (useEffect의 콜백은 직접 async 함수가 될 수 없으므로 내부 함수를 선언해서 호출합니다)
   // ============================================================
-  
+  useEffect(() => {
+    setLoading(true);
+    setError(null);
+
+    searchProducts(query)
+      .then((data) => {
+        setProducts(data); // TODO: 이 부분을 직접 작성해보세요
+        setLoading(false);
+      })
+      .catch((err) => {
+        setError(err.message);
+        setLoading(false);
+      });
+  }, [query]); // TODO: 의존성 배열
+
   const handleSearch = (e) => {
     e.preventDefault();
     if (inputValue.trim()) {

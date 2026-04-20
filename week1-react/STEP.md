@@ -17,6 +17,8 @@
 
 ### localStorage란?
 
+`localStorage` 읽기 전용 속성을 사용하면 Document 출처의 `Storage` 객체에 접근할 수 있습니다. 저장한 데이터는 브라우저 세션 간에 공유됩니다.
+
 브라우저가 제공하는 key-value 저장소로, 탭을 닫아도 데이터가 유지된다.
 
 ```js
@@ -27,6 +29,35 @@ localStorage.removeItem('token');              // 삭제
 
 로그인 성공 시 서버에서 받은 JWT 토큰을 여기에 저장하고, 이후 모든 API 요청에서 꺼내 쓴다.
 
+### 개발자 도구에서 확인하는 방법 (step-02 구현 이후 확인 가능)
+
+로그인 후 아래 경로에서 토큰 저장 여부를 직접 확인할 수 있다.
+
+```
+Chrome DevTools (F12)
+  → Application 탭
+  → 좌측 Storage > Local Storage
+  → http://localhost:3000 선택
+  → Key: token, Value: eyJ... 확인
+```
+
+Network 탭에서 요청 헤더도 확인할 수 있다.
+
+```
+Network 탭
+  → /api/shop/search 요청 클릭
+  → Headers > Request Headers
+  → Authorization: Bearer eyJ... 포함 여부 확인
+```
+
+콘솔에서 직접 읽거나 삭제해 인증 상태를 테스트할 수도 있다.
+
+```js
+// 콘솔에서 실행
+localStorage.getItem('token');    // 현재 저장된 토큰 확인
+localStorage.removeItem('token'); // 토큰 삭제 → 로그아웃 상태 시뮬레이션
+```
+
 ### JWT(Bearer Token) 인증 흐름
 
 ```
@@ -36,7 +67,34 @@ localStorage.removeItem('token');              // 삭제
 4. 서버: 헤더 검증 → 통과하면 데이터 반환, 실패하면 401
 ```
 
+### 스프레드 연산자(`...`)란?
+
+스프레드 연산자는 배열이나 객체를 펼쳐서 다른 배열/객체 안에 합치는 문법이다.
+
+```js
+// 객체 합치기
+const a = { x: 1 };
+const b = { y: 2 };
+const c = { ...a, ...b }; // → { x: 1, y: 2 }
+
+// 기존 객체에 속성 추가
+const base = { 'Content-Type': 'application/json' };
+const extended = { ...base, Authorization: 'Bearer eyJ...' };
+// → { 'Content-Type': 'application/json', Authorization: 'Bearer eyJ...' }
+```
+
+같은 키가 있으면 뒤에 오는 값이 덮어쓴다. 이 특성을 이용해 `options.headers`로 기본 헤더를 재정의할 수 있다.
+
+```js
+const headers = {
+  "Content-Type": "application/json", // 기본값
+  ...options.headers,                 // 호출 측에서 덮어쓸 수 있음
+};
+```
+
 ### 조건부 헤더 패턴
+
+`&&` 단축 평가와 스프레드 연산자를 조합하면 조건에 따라 헤더를 선택적으로 추가할 수 있다.
 
 ```js
 // token이 null이면 빈 객체 {} 가 스프레드됨 → 헤더 없음
@@ -44,10 +102,31 @@ localStorage.removeItem('token');              // 삭제
 ...(token && { Authorization: `Bearer ${token}` })
 ```
 
+**단계별로 풀어보면:**
+
+```js
+// 1. token이 null인 경우
+null && { Authorization: 'Bearer ...' }  // → null (단축 평가로 우측 미평가)
+...null                                   // → 아무것도 추가 안 됨
+
+// 2. token이 있는 경우
+'eyJ...' && { Authorization: 'Bearer eyJ...' }  // → { Authorization: 'Bearer eyJ...' }
+...{ Authorization: 'Bearer eyJ...' }            // → 헤더에 Authorization 추가
+```
+
 | `token` 값 | `token && {...}` 결과 | 헤더 포함 여부 |
 |---|---|---|
 | `null` | `null` (falsy → 스프레드 안 됨) | X |
 | `'eyJhbGc...'` | `{ Authorization: 'Bearer eyJ...' }` | O |
+
+이 패턴을 if문으로 풀어 쓰면 아래와 같다. 스프레드 패턴이 더 간결하므로 실무에서 자주 쓰인다.
+
+```js
+// if문 버전 (동일한 동작)
+if (token) {
+  headers.Authorization = `Bearer ${token}`;
+}
+```
 
 ---
 
@@ -132,6 +211,8 @@ ProductList → shop.js:searchProducts()
 1. `localStorage.getItem('token')` 구현 전: 로그인 후 상품 목록 API 호출 시 **401 에러** 발생하는지 확인
 2. 구현 후: 브라우저 개발자 도구 → Application → Local Storage → `token` 키 저장 확인
 3. Network 탭 → `/api/shop/search` 요청 헤더에 `Authorization: Bearer ...` 포함되는지 확인
+
+> **참고:** 회원가입 및 로그인 기능은 **step-02에서 `auth.js`와 `useAuth.js`를 구현한 이후**에 정상 동작합니다. step-01에서는 토큰 헤더 처리 로직만 완성하는 것이 목표입니다.
 
 ---
 

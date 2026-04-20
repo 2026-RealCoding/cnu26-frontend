@@ -48,6 +48,8 @@ export default function LoginForm({ onLogin }) {
               id="name"
               type="text"
               placeholder="예: 홍길동"
+              value={name}                          
+              onChange={(e) => setName(e.target.value)}  
               disabled={loading}
             />
           </div>

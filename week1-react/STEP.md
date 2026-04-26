@@ -174,7 +174,60 @@ export default function ProductList() {
 
 **핵심 포인트:**
 - `loading`, `error`, `products` 세 상태로 UI의 세 가지 경우를 처리한다.
-- `key={product.productId}`: 리스트 렌더링 시 React가 각 항목을 구분하는 필수 속성.
+- `key={product.productId}`: 리스트 렌더링 시 React가 각 항목을 구분하는 필수 속성. 없으면 경고가 뜨고 렌더링 성능이 나빠진다.
+
+---
+
+## Next.js에서는 어떻게?
+
+Week 1에서는 `useEffect`로 마운트 후 데이터를 가져오고 `loading/error/products` 3가지 상태를 직접 관리했다.
+Week 2 Server Component에서는 **`async/await`으로 렌더링 전에 데이터를 미리 받아와** 이 복잡함이 사라진다.
+
+#### Week 1 — Client Component (useState + useEffect)
+
+```jsx
+// 브라우저에서 실행 — 렌더링 후 데이터 패칭
+export default function ProductList() {
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    setLoading(true);
+    searchProducts(query)
+      .then(data => { setProducts(data); setLoading(false); })
+      .catch(err => { setError(err.message); setLoading(false); });
+  }, [query]);
+
+  if (loading) return <p>로딩 중...</p>;
+  if (error) return <p>오류: {error}</p>;
+  return products.map(p => <ProductCard key={p.productId} product={p} />);
+}
+```
+
+#### Week 2 — Server Component (async/await)
+
+```tsx
+// 서버에서 실행 — 렌더링 전에 데이터를 이미 받아옴
+export default async function ShopPage({ searchParams }) {
+  const query = searchParams.query ?? '맥북';
+  const products = await searchProducts(query);  // useEffect 없음, loading 없음
+
+  return products.map(p => <ProductCard key={p.productId} product={p} />);
+}
+```
+
+**무엇이 달라지나:**
+
+| | Week 1 (Client) | Week 2 (Server) |
+|---|---|---|
+| 실행 위치 | 브라우저 | 서버 |
+| 데이터 패칭 시점 | 렌더링 후 (useEffect) | 렌더링 전 (async/await) |
+| 로딩 상태 관리 | 직접 (`loading` state) | 불필요 (데이터 준비 후 렌더링) |
+| 에러 처리 | `try/catch` + `error` state | `error.tsx` 파일로 처리 |
+| 사용자 경험 | 화면 먼저 → 데이터 채워짐 | 데이터 준비 후 화면 표시 |
+
+> "서버 컴포넌트에서는 데이터가 없는 상태의 화면을 그릴 필요가 없습니다. 서버에서 데이터를 다 받아온 다음에 완성된 HTML을 브라우저로 보내기 때문입니다."
 
 ---
 
@@ -201,4 +254,4 @@ npm run dev      # 개발 서버 시작
 
 ## 핵심 정리
 
-> **`useEffect`의 의존성 배열은 "이 값이 바뀔 때마다 다시 실행"을 선언적으로 표현한다. `loading/error/data` 3상태 패턴은 모든 비동기 데이터 패칭의 기본 구조다. Week 2(Next.js Server Component)에서는 이 패턴이 `async/await`으로 대체되어 로딩 상태 없이 데이터를 바로 받아 렌더링한다.**
+> **`useEffect`의 의존성 배열은 "이 값이 바뀔 때마다 다시 실행"을 선언적으로 표현한다. `loading/error/data` 3상태 패턴은 브라우저에서 비동기 데이터를 다루는 기본 구조다. Week 2(Next.js) Server Component에서는 `async/await`으로 서버에서 데이터를 먼저 받아온 뒤 렌더링하므로, 이 3가지 상태 관리가 필요 없어진다.**

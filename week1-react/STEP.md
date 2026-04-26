@@ -104,6 +104,29 @@ function App() {
 
 ---
 
+### localStorage란?
+
+브라우저에 데이터를 저장하는 공간이다. 새로고침해도 데이터가 사라지지 않는다.
+
+```js
+// 저장
+localStorage.setItem('token', 'eyJhbGc...');
+
+// 읽기
+const token = localStorage.getItem('token'); // 'eyJhbGc...'
+
+// 삭제
+localStorage.removeItem('token');
+```
+
+- **저장 위치:** 브라우저 (서버가 모름)
+- **유지 기간:** 직접 삭제하거나 브라우저 데이터를 지우기 전까지 영구 보존
+- **용도:** 로그인 토큰, 사용자 설정, 장바구니 등 새로고침 후에도 유지해야 하는 데이터
+
+> "개발자 도구 → Application 탭 → Local Storage 에서 저장된 값을 직접 볼 수 있습니다."
+
+---
+
 ### localStorage + useState 동기화
 
 ```
@@ -171,8 +194,66 @@ export function useAuth() {
 ```
 
 **핵심 포인트:**
-- `isLoggedIn: !!user` — `user`가 `null`이면 `false`, 객체이면 `true`로 변환.
+- `isLoggedIn: !!user` — `user`가 `null`이면 `false`, 객체이면 `true`로 변환. `!!`은 값을 boolean으로 바꾸는 관용적 표현이다.
 - 반환값만 보면 컴포넌트는 내부 구현을 몰라도 된다.
+
+---
+
+## Next.js에서는 어떻게?
+
+Week 1에서 `localStorage`로 토큰을 관리하던 방식이 Week 2에서는 **쿠키(Cookie)** 로 대체된다. 인증 상태를 관리하는 주체도 React 훅 → 서버 유틸리티 함수로 바뀐다.
+
+#### localStorage vs Cookie
+
+| | localStorage (Week 1) | Cookie (Week 2) |
+|---|---|---|
+| 저장 위치 | 브라우저 | 브라우저 (서버도 읽을 수 있음) |
+| 서버 접근 | ❌ 불가 | ✅ 가능 (요청마다 자동 전송) |
+| JavaScript 접근 | ✅ 가능 | 설정에 따라 다름 |
+| 용도 | 클라이언트 전용 데이터 | 인증 토큰 (서버에서도 검증 필요) |
+
+> "localStorage는 서버가 읽을 수 없어요. 서버에서 로그인 여부를 확인하거나 페이지 접근을 막으려면 쿠키를 써야 합니다."
+
+#### Week 1 (localStorage + useAuth 훅)
+
+```js
+// useAuth.js — 클라이언트에서 토큰 관리
+const login = async (name, email) => {
+  const { token } = await loginWithUserId(foundUser.id);
+  localStorage.setItem('token', token);  // 브라우저에 저장
+  setUser(foundUser);
+};
+
+// 앱 시작 시 복원
+useEffect(() => {
+  const token = localStorage.getItem('token');
+  if (token) getMe().then(setUser);
+}, []);
+```
+
+#### Week 2 (Cookie + 서버 유틸리티)
+
+```ts
+// app/login/page.tsx — 로그인 성공 시 쿠키에 토큰 저장
+document.cookie = `token=${token}; path=/; max-age=3600`;
+
+// lib/auth-server.ts — 서버에서 쿠키 읽기
+import { cookies } from 'next/headers';
+
+export async function getTokenFromCookie() {
+  const cookieStore = await cookies();
+  return cookieStore.get('token')?.value;
+}
+
+// app/shop/page.tsx — Server Component에서 인증 확인
+const token = await getTokenFromCookie();
+if (!token) redirect('/login');  // 토큰 없으면 로그인 페이지로
+```
+
+**Week 2에서 달라지는 점:**
+- 로그인 상태 확인이 서버에서 일어남 → 인증 안 된 사용자는 페이지 렌더링 자체가 안 됨
+- `useAuth` 훅 불필요 → `getTokenFromCookie()` 서버 함수로 대체
+- `proxy.ts`(미들웨어)가 `/shop`, `/cart` 등 보호 경로를 한 곳에서 일괄 차단
 
 ---
 
@@ -199,4 +280,4 @@ npm run dev      # 개발 서버 시작
 
 ## 핵심 정리
 
-> **커스텀 훅(`useAuth`)은 인증과 관련된 모든 로직을 한 곳에 모아 컴포넌트를 단순하게 만든다. localStorage와 React 상태를 함께 관리하는 이 패턴은 Week 2(Next.js)에서 localStorage 대신 쿠키 + 서버 쿠키 읽기로 대체된다.**
+> **커스텀 훅(`useAuth`)은 인증과 관련된 모든 로직을 한 곳에 모아 컴포넌트를 단순하게 만든다. localStorage와 React 상태를 함께 관리하는 이 패턴은 Week 2(Next.js)에서 localStorage 대신 쿠키로, `useAuth` 훅 대신 서버 유틸리티 함수(`auth-server.ts`)로 대체된다. "어디에 토큰을 저장하고 어디서 읽는가"의 차이이고, 인증 흐름의 본질은 동일하다.**

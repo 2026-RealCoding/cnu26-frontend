@@ -15,6 +15,57 @@
 
 ## 핵심 개념 설명
 
+### HTTP 메서드 — GET vs POST
+
+브라우저와 서버가 데이터를 주고받을 때 사용하는 규칙이다.
+
+| 메서드 | 용도 | 데이터 위치 | 예시 |
+|---|---|---|---|
+| `GET` | 데이터 조회 | URL 뒤 (`?name=홍길동`) | 내 정보 조회, 상품 검색 |
+| `POST` | 데이터 생성/전송 | 요청 본문(body, 외부에 노출 X) | 회원가입, 로그인 |
+
+```js
+// GET — URL에 데이터가 드러남 (민감 정보 X)
+fetch('/users/search?name=홍길동')
+
+// POST — body 안에 데이터를 넣어 전송
+fetch('/users/login', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({ userId: 3 }),
+})
+```
+
+> "로그인 정보를 GET으로 보내면 URL에 사용자 정보가 노출됩니다. 생성/전송은 항상 POST를 씁니다."
+
+---
+
+### async / await
+
+서버에 데이터를 요청하면 응답이 올 때까지 기다려야 한다. JavaScript는 기본적으로 기다리지 않고 다음 줄을 실행하는데, `async/await`으로 "여기서 기다려"라고 명시할 수 있다.
+
+```js
+// ❌ await 없이 — 응답 오기 전에 다음 줄이 실행됨
+function login() {
+  const user = fetchUser();   // 아직 데이터가 없는 Promise 객체가 담김
+  console.log(user.name);     // undefined — 데이터가 도착하지 않았음
+}
+
+// ✅ async/await — 응답을 기다렸다가 다음 줄 실행
+async function login() {
+  const user = await fetchUser();  // 응답이 올 때까지 대기
+  console.log(user.name);          // 정상 출력
+}
+```
+
+- 함수 앞에 `async`를 붙여야 그 안에서 `await`을 쓸 수 있다.
+- `await`는 Promise(비동기 작업)가 완료될 때까지 기다렸다가 결과값을 꺼내준다.
+- `async` 함수는 항상 Promise를 반환한다. 호출하는 쪽에서도 `await`을 붙여야 결과값을 받는다.
+
+> "이 강의에서 나오는 API 함수들이 모두 `async`인 이유가 바로 이것입니다. 서버 응답을 기다려야 하기 때문입니다."
+
+---
+
 ### API 함수 추상화란?
 
 `fetch`를 매번 직접 호출하는 대신, 기능별로 함수를 만들어 관리한다.
@@ -162,6 +213,47 @@ const login = async (name, email) => {
 
 ---
 
+## Next.js에서는 어떻게?
+
+Week 1에서 `auth.js`에 만든 함수들이 Week 2(Next.js)에서는 `lib/api.ts`로 이어진다.
+핵심 차이는 **어디서 실행되는가**다.
+
+```
+Week 1: 브라우저에서 실행 → Vite 프록시를 거쳐 백엔드 호출
+Week 2: 서버에서 실행    → 백엔드를 직접 호출 (CORS 없음, 환경변수 안전)
+```
+
+#### Week 1 vs Week 2 코드 비교
+
+```js
+// Week 1 — src/api/auth.js (client.js의 post() 사용)
+export async function signUp(name, email) {
+  return post('/users', { name, email });
+}
+```
+
+```ts
+// Week 2 — lib/api.ts (fetch 직접 사용, 서버에서 실행)
+export async function signUpUser(name: string, email: string): Promise<User> {
+  const res = await fetch(`${BACKEND_URL}/users`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ name, email }),
+  });
+  if (!res.ok) throw new Error('회원가입 실패');
+  return res.json();
+}
+```
+
+**달라진 점:**
+- `client.js`의 `post()` 대신 `fetch()`를 직접 사용 — 서버 환경에서는 공통 클라이언트 없이 직접 호출이 더 명확하다.
+- `BACKEND_URL`이 환경변수로 관리된다 — 브라우저에 노출되지 않아 API 키가 안전하다.
+- 함수 구조(이름, 역할, 파라미터)는 Week 1과 거의 동일하다.
+
+> "Week 1에서 '함수로 추상화'하는 습관을 들이면, Week 2에서 파일을 열었을 때 어디에 무엇이 있는지 바로 예측할 수 있습니다."
+
+---
+
 ## 프로젝트 실행법
 
 ```bash
@@ -187,4 +279,4 @@ npm run dev      # 개발 서버 시작
 
 ## 핵심 정리
 
-> **API 함수를 `auth.js`에 추상화하면, 컴포넌트와 훅은 네트워크 세부사항을 몰라도 된다. `signUp`과 `loginWithUserId`를 분리하는 것처럼, 각 함수는 하나의 역할만 담당한다(단일 책임 원칙). Week 2(Next.js)에서는 이 함수들이 서버에서 직접 호출된다.**
+> **API 함수를 `auth.js`에 추상화하면, 컴포넌트와 훅은 네트워크 세부사항을 몰라도 된다. `signUp`과 `loginWithUserId`를 분리하는 것처럼, 각 함수는 하나의 역할만 담당한다(단일 책임 원칙). Week 2(Next.js)에서는 동일한 함수 구조가 `lib/api.ts`로 이어지며, 브라우저 대신 서버에서 직접 백엔드를 호출한다.**

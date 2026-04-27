@@ -4,7 +4,19 @@ import ProductCard from './ProductCard';
 
 const DEFAULT_QUERY = '맥북';
 
-export default function ProductList() {
+// ============================================================
+// [과제] App.jsx에서 onAddToCart prop을 받아 ProductCard로 전달하세요
+//
+// 1. props에 onAddToCart를 추가합니다
+//    export default function ProductList({ onAddToCart }) { ... }
+//
+// 2. ProductCard에 onAddToCart를 전달합니다
+//    <ProductCard key={product.productId} product={product} onAddToCart={onAddToCart} />
+//
+// 이것을 "props 내려주기(prop drilling)"라고 합니다.
+// App → ProductList → ProductCard 순서로 함수가 전달됩니다.
+// ============================================================
+export default function ProductList() { // TODO: onAddToCart prop 추가
   // ============================================================
   // [실습 6-a] 아래 3가지 상태를 useState로 선언하세요 (
   // - products: 상품 목록 (초기값: 빈 배열 [])
@@ -18,7 +30,9 @@ export default function ProductList() {
   //     false로 설정하면 데이터 로딩 전에 빈 목록이 잠깐 보이는 깜빡임이 생깁니다.
   //   - error: 오류가 없으면 null, 있으면 오류 메시지 문자열로 사용합니다.
   // ============================================================
-
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [query, setQuery] = useState(DEFAULT_QUERY);
   const [inputValue, setInputValue] = useState(DEFAULT_QUERY);
 
@@ -42,7 +56,14 @@ export default function ProductList() {
   //   4) .catch(err => ...): 실패 시 오류 메시지 저장 + 로딩 종료
   //   (useEffect의 콜백은 직접 async 함수가 될 수 없으므로 내부 함수를 선언해서 호출합니다)
   // ============================================================
-  
+  useEffect(() => {
+    setLoading(true);
+    searchProducts(query)
+      .then(data => { setProducts(data); setLoading(false); })
+      .catch(err => { setError(err.message); setLoading(false); });
+  }, [query]);
+
+
   const handleSearch = (e) => {
     e.preventDefault();
     if (inputValue.trim()) {
@@ -75,7 +96,7 @@ export default function ProductList() {
           <div className="product-grid">
             {products.map((product) => (
               // key: 리스트 렌더링 시 React가 각 항목을 구분하는 고유 식별자
-              <ProductCard key={product.productId} product={product} />
+              <ProductCard key={product.productId} product={product} /* TODO: onAddToCart 전달 */ />
             ))}
           </div>
         </>

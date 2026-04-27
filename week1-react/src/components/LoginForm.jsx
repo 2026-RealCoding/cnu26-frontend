@@ -74,10 +74,10 @@ export default function LoginForm({ onLogin }) {
 
           <button type="submit" className="btn-primary" disabled={loading}>
             {loading
-              ? "처리 중..."
+              ? '처리 중...'
               : needEmail
-                ? "회원가입 & 로그인"
-                : "로그인"}
+                ? '회원가입 & 로그인'
+                : '로그인'}
           </button>
         </form>
       </div>

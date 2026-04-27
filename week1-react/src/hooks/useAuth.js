@@ -4,6 +4,7 @@ import { findUserByName, signUp, loginWithUserId, getMe } from '../api/auth';
 // 인증 관련 상태와 로직을 캡슐화한 커스텀 훅
 // App.jsx에서 사용: const { user, isLoggedIn, login, logout } = useAuth();
 export function useAuth() {
+  const [user, setUser] = useState(null);
   // ============================================================
   // [실습 4-a] user 상태를 useState로 선언하세요
   // 초기값: null (로그인 전에는 유저 정보가 없음)
@@ -41,6 +42,9 @@ export function useAuth() {
       if (!email) throw new Error('처음 방문이시군요! 이메일을 입력해주세요');
       foundUser = await signUp(name, email);
     }
+    const { token } = await loginWithUserId(foundUser.id); // ← [실습 4-b]
+    localStorage.setItem('token', token);                   // ← [실습 4-b]
+    setUser(foundUser);  
 
     // ============================================================
     // [실습 4-b] 로그인 후 토큰을 localStorage에 저장하세요
@@ -72,10 +76,10 @@ export function useAuth() {
   //   순서는 바뀌어도 동작하지만, 저장소 정리 → 상태 초기화 순서가 관례적입니다.
   // ============================================================
   const logout = () => {
+    localStorage.removeItem('token');  // ← [실습 4-c]
+    setUser(null);                     // ← [실습 4-c]
   };
 
   return {
-    login,
-    logout,
-  };
+    user, isLoggedIn: !!user, login, logout};
 }

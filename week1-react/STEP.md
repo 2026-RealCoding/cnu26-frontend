@@ -79,9 +79,10 @@ function ProductList() {
 
 ```js
 useEffect(() => {
-  // 부수 효과 실행
+  //  setup (부수 효과 실행)
 }, [의존성]);
 // ↑
+// dependencies
 // 두 번째 인자를 빠뜨리지 말 것 — 없으면 매 렌더링마다 실행됨
 ```
 

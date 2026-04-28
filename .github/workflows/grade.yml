@@ -47,7 +47,7 @@ jobs:
 
       - name: 의존성 설치
         working-directory: week1-react
-        run: npm ci
+        run: npm install
 
       - name: 테스트 실행
         working-directory: week1-react

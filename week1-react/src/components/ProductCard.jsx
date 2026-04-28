@@ -11,8 +11,7 @@
 //    (productId, title, image, price)
 // ============================================================
 
-export default function ProductCard({ product }) { // TODO: onAddToCart prop 추가
-  // HTML 태그 제거 (<b>맥북</b> → 맥북)
+export default function ProductCard({ product, onAddToCart }) {
   const cleanTitle = product.title.replace(/<[^>]+>/g, '');
   const price = product.lprice
     ? `${Number(product.lprice).toLocaleString()}원`
@@ -39,10 +38,14 @@ export default function ProductCard({ product }) { // TODO: onAddToCart prop 추
         {product.mallName && (
           <p className="product-mall">{product.mallName}</p>
         )}
-        {/* TODO: onClick에 onAddToCart 호출 코드를 연결하세요 */}
         <button
           className="btn-add-cart"
-          onClick={() => {/* TODO */}}
+          onClick={() => onAddToCart({
+            productId: product.productId,
+            title: cleanTitle,
+            image: product.image,
+            price: Number(product.lprice),
+          })}
         >
           🛒 담기
         </button>

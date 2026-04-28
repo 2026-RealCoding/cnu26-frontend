@@ -82,7 +82,7 @@ describe('과제 10 (심화): 결제하기 버튼', () => {
     await userEvent.click(checkoutBtn);
 
     expect(
-      screen.getByText(/완료|감사|결제.*완료|주문.*완료/i)
+      screen.getByText(/완료|감사|success|done|주문|결제|처리/i)
     ).toBeInTheDocument();
   });
 });

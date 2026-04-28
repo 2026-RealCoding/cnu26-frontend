@@ -12,6 +12,8 @@ jobs:
   grade:
     name: 채점 실행
     runs-on: ubuntu-latest
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
     permissions:
       pull-requests: write
       contents: read

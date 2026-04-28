@@ -4,19 +4,7 @@ import ProductCard from './ProductCard';
 
 const DEFAULT_QUERY = '맥북';
 
-// ============================================================
-// [과제] App.jsx에서 onAddToCart prop을 받아 ProductCard로 전달하세요
-//
-// 1. props에 onAddToCart를 추가합니다
-//    export default function ProductList({ onAddToCart }) { ... }
-//
-// 2. ProductCard에 onAddToCart를 전달합니다
-//    <ProductCard key={product.productId} product={product} onAddToCart={onAddToCart} />
-//
-// 이것을 "props 내려주기(prop drilling)"라고 합니다.
-// App → ProductList → ProductCard 순서로 함수가 전달됩니다.
-// ============================================================
-export default function ProductList() { // TODO: onAddToCart prop 추가
+export default function ProductList({ onAddToCart }) {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -47,9 +35,7 @@ export default function ProductList() { // TODO: onAddToCart prop 추가
           onChange={(e) => setInputValue(e.target.value)}
           placeholder="검색어를 입력하세요"
         />
-        <button type="submit" className="btn-primary">
-          검색
-        </button>
+        <button type="submit" className="btn-primary">검색</button>
       </form>
 
       {loading && <p className="status-msg">상품을 불러오는 중...</p>}
@@ -57,15 +43,13 @@ export default function ProductList() { // TODO: onAddToCart prop 추가
 
       {!loading && !error && (
         <>
-          <p className="result-count">
-            {query} 검색 결과 {products.length}개
-          </p>
+          <p className="result-count">{query} 검색 결과 {products.length}개</p>
           <div className="product-grid">
             {products.map((product) => (
               <ProductCard
                 key={product.productId}
                 product={product}
-                /* TODO: onAddToCart={onAddToCart} */
+                onAddToCart={onAddToCart}
               />
             ))}
           </div>

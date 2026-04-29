@@ -1,12 +1,22 @@
 import { useState } from 'react';
 import { useAuth } from './hooks/useAuth';
-// TODO: useCart와 CartView를 import하세요
+import { useCart } from './hooks/useCart';
+import CartView from './components/CartView';
 import LoginForm from './components/LoginForm';
 import ProductList from './components/ProductList';
 import './index.css';
 
 export default function App() {
   const { user, isLoggedIn, login, logout } = useAuth();
+  const {
+    cart,
+    addToCart,
+    removeFromCart,
+    updateQuantity,
+    clearCart,
+    totalCount,
+    totalPrice,
+  } = useCart();
 
   // ============================================================
   // [과제] useCart 훅을 연결하세요
@@ -31,7 +41,7 @@ export default function App() {
                 - 담긴 상품 수(totalCount)를 뱃지로 표시하세요
                 ============================================================ */}
             <button className="btn-cart" onClick={() => setCartOpen(true)}>
-              🛒 {/* TODO: totalCount 뱃지 표시 */}
+              🛒 {totalCount > 0 && <span className="cart-badge">{totalCount}</span>}
             </button>
             <button onClick={logout} className="btn-logout">
               로그아웃
@@ -47,7 +57,7 @@ export default function App() {
           //
           // ProductList → ProductCard 순서로 함수가 전달됩니다
           // ============================================================
-          <ProductList /* TODO: onAddToCart 전달 */ />
+          <ProductList onAddToCart={addToCart} />
         ) : (
           <LoginForm onLogin={login} />
         )}
@@ -57,7 +67,16 @@ export default function App() {
           [과제] cartOpen이 true일 때 CartView를 렌더링하세요
           CartView에 필요한 props: cart, totalPrice, onRemove, onUpdateQty, onClear, onClose
           ============================================================ */}
-      {/* TODO: cartOpen && <CartView ... /> */}
+      {cartOpen && (
+        <CartView
+          cart={cart}
+          totalPrice={totalPrice}
+          onRemove={removeFromCart}
+          onUpdateQty={updateQuantity}
+          onClear={clearCart}
+          onClose={() => setCartOpen(false)}
+        />
+      )}
     </div>
   );
 }

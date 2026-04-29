@@ -309,3 +309,4 @@ npm run dev      # 개발 서버 시작
 ## 핵심 정리
 
 > **`useEffect`의 의존성 배열은 "이 값이 바뀔 때마다 다시 실행"을 선언적으로 표현한다. `loading/error/data` 3상태 패턴은 브라우저에서 비동기 데이터를 다루는 기본 구조다. Week 2(Next.js) Server Component에서는 `async/await`으로 서버에서 데이터를 먼저 받아온 뒤 렌더링하므로, 이 3가지 상태 관리가 필요 없어진다.**
+

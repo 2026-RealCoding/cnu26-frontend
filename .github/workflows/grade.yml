@@ -1,0 +1,101 @@
+name: 과제 자동 채점
+
+on:
+  workflow_dispatch:
+    inputs:
+      pr_number:
+        description: '채점할 PR 번호 (예: 5)'
+        required: true
+        type: number
+
+jobs:
+  grade:
+    name: 채점 실행
+    runs-on: ubuntu-latest
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+    permissions:
+      pull-requests: write
+      contents: read
+
+    steps:
+      - name: auto-grade 브랜치 체크아웃 (테스트 파일 + 채점 스크립트)
+        uses: actions/checkout@v4
+        with:
+          ref: auto-grade
+
+      - name: 학생 PR의 구현 파일 가져오기
+        run: |
+          git fetch origin refs/pull/${{ inputs.pr_number }}/head:refs/pr/head
+
+          copy_file() {
+            git show refs/pr/head:"$1" > "$1" 2>/dev/null \
+              && echo "✅ $1" \
+              || echo "⚠️  $1 (PR에 없음 — 스켈레톤 유지)"
+          }
+
+          copy_file week1-react/src/hooks/useCart.js
+          copy_file week1-react/src/components/CartView.jsx
+          copy_file week1-react/src/components/ProductCard.jsx
+          copy_file week1-react/src/components/ProductList.jsx
+          copy_file week1-react/src/App.jsx
+
+      - name: Node.js 설정
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: 의존성 설치
+        working-directory: week1-react
+        run: npm install
+
+      - name: 테스트 실행
+        working-directory: week1-react
+        run: npm run test:json
+        continue-on-error: true
+
+      - name: 채점 결과 생성
+        id: grade
+        run: |
+          RESULT=$(node .github/scripts/grade.js)
+          echo "result<<EOF" >> $GITHUB_OUTPUT
+          echo "$RESULT" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      - name: PR에 채점 결과 댓글 달기
+        uses: actions/github-script@v7
+        env:
+          GRADE_RESULT: ${{ steps.grade.outputs.result }}
+        with:
+          script: |
+            const prNumber = parseInt('${{ inputs.pr_number }}');
+            const body = process.env.GRADE_RESULT;
+
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: prNumber,
+            });
+
+            const existing = comments.find(c =>
+              c.user.login === 'github-actions[bot]' &&
+              c.body.includes('채점 결과')
+            );
+
+            if (existing) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: existing.id,
+                body,
+              });
+              console.log(`PR #${prNumber} 채점 댓글 업데이트 완료`);
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: prNumber,
+                body,
+              });
+              console.log(`PR #${prNumber} 채점 댓글 작성 완료`);
+            }

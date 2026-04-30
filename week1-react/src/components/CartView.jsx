@@ -62,7 +62,7 @@ export default function CartView({
             <div className="cart-item-quantity">
               <button
                 className="qty-btn"
-                onClick={() => {/* TODO */}}
+                onClick={() => onUpdateQty(item.productId, item.quantity - 1)}
                 disabled={item.quantity <= 1}
               >
                 -
@@ -70,7 +70,7 @@ export default function CartView({
               <span className="qty-value">{item.quantity}</span>
               <button
                 className="qty-btn"
-                onClick={() => {/* TODO */}}
+                onClick={() => onUpdateQty(item.productId, item.quantity + 1)}
               >
                 +
               </button>

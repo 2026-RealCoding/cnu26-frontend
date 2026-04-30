@@ -23,7 +23,13 @@ export default function CartView({
   //
   // cart 배열이 비어있으면 "장바구니가 비어있습니다" 메시지를 보여주세요
   // ============================================================
-  // TODO
+  if (cart.length === 0) { //cart 배열이 비어있으면
+    return (
+      <div className="cart-view">
+        <p>장바구니가 비어있습니다</p>
+      </div>
+    );
+  }
 
   return (
     <div className="cart-view">

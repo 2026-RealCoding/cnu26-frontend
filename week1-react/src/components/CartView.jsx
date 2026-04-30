@@ -85,7 +85,7 @@ export default function CartView({
                 ============================================================ */}
             <button
               className="btn-remove"
-              onClick={() => {/* TODO */}}
+              onClick={() => {onRemove(item.productId)}}
             >
               ✕
             </button>

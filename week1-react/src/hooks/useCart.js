@@ -77,7 +77,12 @@ export function useCart() {
   // 조건: quantity가 1 미만이면 아무것도 하지 않습니다 (0개 방지)
   // ============================================================
   const updateQuantity = (productId, quantity) => {
-    // TODO
+    if (quantity < 1) return; //quantity가 1 미만이면 아무것도 하지 않음
+    setCart((prevCart) =>
+      prevCart.map((item) =>
+        item.productId === productId ? { ...item, quantity } : item
+      )
+    ); //productId가 일치하는 아이템의 quantity 업데이트 
   };
 
   // ============================================================

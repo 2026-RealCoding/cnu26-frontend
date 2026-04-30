@@ -25,8 +25,10 @@ export function useCart() {
   // 참고: localStorage에는 문자열만 저장할 수 있어서
   //       저장 시 JSON.stringify, 읽기 시 JSON.parse가 필요합니다
   // ============================================================
-  const [cart, setCart] = useState([]); // TODO
-
+  const [cart, setCart] = useState(() => {
+    const savedCart = localStorage.getItem('cart'); //cart 키에서 초기값 불러와 저장
+    return savedCart ? JSON.parse(savedCart) : []; //있으면 return, 없으면 빈 배열 반환
+  });
   // ============================================================
   // [과제 2] cart가 바뀔 때마다 localStorage에 저장하세요
   //

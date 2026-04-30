@@ -108,7 +108,13 @@ export default function CartView({
               [과제 10 - 심화] 결제하기 버튼을 완성하세요
               - 클릭 시 장바구니를 비우고 완료 메시지를 표시하세요
               ============================================================ */}
-          <button className="btn-checkout" onClick={() => {/* TODO */}}>
+          <button
+            className="btn-checkout"
+            onClick={() => {
+              setCart([]);
+              alert('결제가 완료되었습니다!');
+            }}
+          >
             {totalPrice.toLocaleString()}원 결제하기
           </button>
         </div>

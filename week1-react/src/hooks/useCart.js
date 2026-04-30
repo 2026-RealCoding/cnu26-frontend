@@ -36,7 +36,9 @@ export function useCart() {
   //   - cart 상태가 바뀔 때마다 자동으로 localStorage에 반영되어야 합니다
   //   - useEffect와 의존성 배열을 활용하세요
   // ============================================================
-  // TODO
+  useEffect(() => {
+    localStorage.setItem('cart', JSON.stringify(cart)); //cart 상태가 바뀔 때마다 localStorage에 저장
+  }, [cart]); //cart가 바뀔 때마다 useEffect 실행
 
   // ============================================================
   // [과제 3] 장바구니에 상품 추가

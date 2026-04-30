@@ -68,7 +68,7 @@ export function useCart() {
   // 조건: productId가 일치하는 아이템만 제거하세요
   // ============================================================
   const removeFromCart = (productId) => {
-    // TODO
+    setCart((prevCart) => prevCart.filter((item) => item.productId !== productId)); //productId가 일치하는 아이템 제거
   };
 
   // ============================================================

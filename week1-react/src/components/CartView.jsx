@@ -20,6 +20,8 @@ export default function CartView({
   onClear,
   onClose,
 }) {
+  const [ordered, setOrdered] = useState(false);
+
   // ============================================================
   // [과제 7] 빈 장바구니 처리
   //
@@ -32,7 +34,10 @@ export default function CartView({
           <h2 className="cart-title">장바구니 (0종)</h2>
           <button onClick={onClose} className="btn-close">닫기</button>
         </div>
-        <p style={{ padding: '2rem', textAlign: 'center' }}>장바구니가 비어있습니다</p>
+        {ordered
+          ? <p style={{ padding: '2rem', textAlign: 'center' }}>결제가 완료되었습니다</p>
+          : <p style={{ padding: '2rem', textAlign: 'center' }}>장바구니가 비어있습니다</p>
+        }
       </div>
     );
   }
@@ -114,7 +119,7 @@ export default function CartView({
               [과제 10 - 심화] 결제하기 버튼을 완성하세요
               - 클릭 시 장바구니를 비우고 완료 메시지를 표시하세요
               ============================================================ */}
-          <button className="btn-checkout" onClick={() => { onClear(); alert('결제가 완료되었습니다!'); }}>
+          <button className="btn-checkout" onClick={() => { onClear(); setOrdered(true); }}>
             {totalPrice.toLocaleString()}원 결제하기
           </button>
         </div>

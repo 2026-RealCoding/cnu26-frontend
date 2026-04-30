@@ -48,7 +48,18 @@ export function useCart() {
   //   - 새 상품이면 → quantity: 1 로 추가
   // ============================================================
   const addToCart = (product) => {
-    // TODO
+    setCart((prevCart) => {
+      const existingItem = prevCart.find((item) => item.productId === product.productId); //이미 담긴 상품인지 확인
+      if (existingItem) {
+        //이미 담긴 상품이면 quantity만 1 증가
+        return prevCart.map((item) =>
+          item.productId === product.productId ? { ...item, quantity: item.quantity + 1 } : item
+        );
+      } else {
+        //새 상품이면 quantity: 1로 추가
+        return [...prevCart, { ...product, quantity: 1 }];
+      }
+    });
   };
 
   // ============================================================

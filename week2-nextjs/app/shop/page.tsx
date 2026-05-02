@@ -31,7 +31,6 @@ export default async function ShopPage({
   // (middleware에서 이미 처리되지만, 방어적으로 한 번 더 체크)
   // ============================================================
   const token = await getTokenFromCookie();
-  5;
   if (!token) redirect("/login");
 
   // ============================================================

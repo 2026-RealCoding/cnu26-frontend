@@ -51,14 +51,14 @@ export default function ProductList() {
 
     searchProducts(query)
       .then((data) => {
-        setProducts(data); // TODO: 이 부분을 직접 작성해보세요
+        setProducts(data);
         setLoading(false);
       })
       .catch((err) => {
         setError(err.message);
         setLoading(false);
       });
-  }, [query]); // TODO: 의존성 배열
+  }, [query]);
 
   const handleSearch = (e) => {
     e.preventDefault();

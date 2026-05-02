@@ -15,14 +15,14 @@ export default async function OrdersPage() {
   // ============================================================
   // [실습 7-a] 토큰을 읽어오고, 없으면 /login으로 리다이렉트
   // ============================================================
-  const token = await getTokenFromCookie(); // TODO
+  const token = await getTokenFromCookie();
   if (!token) redirect('/login');
 
   // ============================================================
   // [실습 7-b] 주문 목록을 가져오세요
   // getMyOrders(token) 호출 (lib/api.ts에서 구현)
   // ============================================================
-  const orders = await getMyOrders(token); // TODO
+  const orders = await getMyOrders(token);
 
   return (
     <div>

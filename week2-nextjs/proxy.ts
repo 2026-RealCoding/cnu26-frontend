@@ -15,17 +15,18 @@ import { NextRequest, NextResponse } from 'next/server';
 // ============================================================
 
 export function proxy(request: NextRequest) {
-  // TODO [실습 2-a]: request.cookies.get('token')?.value 로 토큰을 읽어오세요
-  const token = undefined;
+  const token = request.cookies.get('token')?.value;
   const { pathname } = request.nextUrl;
 
   const isLoginPage = pathname === '/login';
 
-  // TODO [실습 2-b]: 토큰이 없고, 로그인 페이지가 아닌 경우 → /login 으로 리다이렉트
-  // NextResponse.redirect(new URL('/login', request.url))
+  if (!token && !isLoginPage) {
+    return NextResponse.redirect(new URL('/login', request.url));
+  }
 
-  // TODO [실습 2-c]: 토큰이 있는데 /login 에 접근한 경우 → /shop 으로 리다이렉트
-  // NextResponse.redirect(new URL('/shop', request.url))
+  if (token && isLoginPage) {
+    return NextResponse.redirect(new URL('/shop', request.url));
+  }
 
   return NextResponse.next();
 }

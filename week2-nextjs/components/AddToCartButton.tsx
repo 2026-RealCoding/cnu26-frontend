@@ -30,7 +30,7 @@ export default function AddToCartButton({ product }: AddToCartButtonProps) {
   //   CartProvider가 app/layout.tsx에서 앱 전체를 감싸고 있으므로
   //   어느 Client Component에서든 useCart()를 호출할 수 있습니다.
   // ============================================================
-  const { addToCart } = useCart(); // TODO
+  const { addToCart } = useCart();
   const [added, setAdded] = useState(false);
 
   // ============================================================
@@ -53,7 +53,7 @@ export default function AddToCartButton({ product }: AddToCartButtonProps) {
   //   이 3줄이 "클릭 → 상태 업데이트 → UI 반영"의 전형적인 React 패턴입니다.
   // ============================================================
   const handleAddToCart = () => {
-    addToCart(product); // TODO
+    addToCart(product);
     setAdded(true);
     setTimeout(() => setAdded(false), 1500);
   };

@@ -17,7 +17,7 @@ export function useAuth() {
   //   반환값 [user, setUser]에서 user는 현재 값, setUser는 값을 변경하는 함수입니다.
   //   App.jsx에서 isLoggedIn: !!user 처럼 user 유무로 UI를 조건부 렌더링합니다.
   // ============================================================
-  const [user, setUser] = useState(null); // TODO
+  const [user, setUser] = useState(null);
 
   // 앱 시작 시 localStorage에 토큰이 있으면 자동 로그인 복원
   useEffect(() => {
@@ -65,7 +65,7 @@ export function useAuth() {
     //   마지막으로 setUser(foundUser)로 상태를 업데이트해야
     //   React가 리렌더링되어 UI가 로그인 상태로 전환됩니다.
     // ============================================================
-    const { token } = await loginWithUserId(foundUser.id); // TODO: 아래 두 줄 구현
+    const { token } = await loginWithUserId(foundUser.id);
     localStorage.setItem('token', token);
     setUser(foundUser);
   };
@@ -90,7 +90,7 @@ export function useAuth() {
   //   순서는 바뀌어도 동작하지만, 저장소 정리 → 상태 초기화 순서가 관례적입니다.
   // ============================================================
   const logout = () => {
-    localStorage.removeItem('token'); // TODO
+    localStorage.removeItem('token');
     setUser(null);
   };
 

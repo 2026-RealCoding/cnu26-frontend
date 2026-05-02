@@ -37,7 +37,9 @@ async function request(path, options = {}) {
 
   if (!response.ok) {
     const error = await response.json().catch(() => ({ message: 'API 오류' }));
-    throw new Error(error.message ?? `HTTP ${response.status}`);
+    const requestError = new Error(error.message ?? `HTTP ${response.status}`);
+    requestError.status = response.status;
+    throw requestError;
   }
 
   return response.json();

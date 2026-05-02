@@ -33,7 +33,7 @@ export default function CartPage() {
   //   totalPrice: 총 금액 (cart에서 파생된 계산값)
   // ============================================================
   const { cart, removeFromCart, updateQuantity, clearCart, totalPrice } =
-    useCart(); // TODO
+    useCart();
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);

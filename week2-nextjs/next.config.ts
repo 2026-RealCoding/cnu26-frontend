@@ -1,6 +1,14 @@
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import type { NextConfig } from 'next';
 
+const projectRoot = path.dirname(fileURLToPath(import.meta.url));
+
 const nextConfig: NextConfig = {
+  allowedDevOrigins: ['10.20.10.244'],
+  turbopack: {
+    root: projectRoot,
+  },
   async rewrites() {
     return [
       {

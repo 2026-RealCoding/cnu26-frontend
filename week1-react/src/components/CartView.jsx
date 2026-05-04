@@ -25,6 +25,7 @@ export default function CartView({
   // ============================================================
   // TODO
 
+
   return (
     <div className="cart-view">
       {/* 헤더 */}
@@ -35,6 +36,8 @@ export default function CartView({
 
       {/* 상품 목록 */}
       <ul className="cart-list">
+        {(cart.length === 0) && '장바구니가 비어있습니다'}
+
         {cart.map((item) => (
           <li key={item.productId} className="cart-item">
             {item.image && (
@@ -56,7 +59,7 @@ export default function CartView({
             <div className="cart-item-quantity">
               <button
                 className="qty-btn"
-                onClick={() => {/* TODO */}}
+                onClick={() => {/* TODO */onUpdateQty(item.productId, item.quantity - 1);}}
                 disabled={item.quantity <= 1}
               >
                 -
@@ -64,7 +67,7 @@ export default function CartView({
               <span className="qty-value">{item.quantity}</span>
               <button
                 className="qty-btn"
-                onClick={() => {/* TODO */}}
+                onClick={() => {/* TODO */onUpdateQty(item.productId, item.quantity + 1);}}
               >
                 +
               </button>
@@ -79,7 +82,7 @@ export default function CartView({
                 ============================================================ */}
             <button
               className="btn-remove"
-              onClick={() => {/* TODO */}}
+              onClick={() => {/* TODO */onRemove(item.productId);}}
             >
               ✕
             </button>
@@ -102,7 +105,10 @@ export default function CartView({
               [과제 10 - 심화] 결제하기 버튼을 완성하세요
               - 클릭 시 장바구니를 비우고 완료 메시지를 표시하세요
               ============================================================ */}
-          <button className="btn-checkout" onClick={() => {/* TODO */}}>
+          <button className="btn-checkout" onClick={() => {
+            onClear();
+            alert('결제가 완료되었습니다.');
+          }}>
             {totalPrice.toLocaleString()}원 결제하기
           </button>
         </div>

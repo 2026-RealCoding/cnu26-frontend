@@ -25,7 +25,11 @@ export function useCart() {
   // 참고: localStorage에는 문자열만 저장할 수 있어서
   //       저장 시 JSON.stringify, 읽기 시 JSON.parse가 필요합니다
   // ============================================================
-  const [cart, setCart] = useState([]); // TODO
+  const [cart, setCart] = useState(() => {
+    const cartI = localStorage.getItem('cart');
+    return cartI ? JSON.parse(cartI) : [] ;
+  }
+  ); // TODO
 
   // ============================================================
   // [과제 2] cart가 바뀔 때마다 localStorage에 저장하세요
@@ -35,7 +39,9 @@ export function useCart() {
   //   - useEffect와 의존성 배열을 활용하세요
   // ============================================================
   // TODO
-
+  useEffect(() => {
+    localStorage.setItem('cart', JSON.stringify(cart));
+  }, [cart]);
   // ============================================================
   // [과제 3] 장바구니에 상품 추가
   //
@@ -44,6 +50,15 @@ export function useCart() {
   //   - 새 상품이면 → quantity: 1 로 추가
   // ============================================================
   const addToCart = (product) => {
+    if(cart.find(({productId}) => productId === product.productId)) {
+      setCart((prev) => prev.map((prod) => 
+        (prod.productId === product.productId)
+          ? {...prod, quantity : prod.quantity + 1} : prod
+      ));
+    } else {
+      setCart((prev) => [...prev, {...product, quantity : 1}]);
+    }
+    
     // TODO
   };
 
@@ -53,6 +68,7 @@ export function useCart() {
   // 조건: productId가 일치하는 아이템만 제거하세요
   // ============================================================
   const removeFromCart = (productId) => {
+    setCart((prev) => prev.filter((p) => p.productId !== productId));
     // TODO
   };
 
@@ -62,6 +78,14 @@ export function useCart() {
   // 조건: quantity가 1 미만이면 아무것도 하지 않습니다 (0개 방지)
   // ============================================================
   const updateQuantity = (productId, quantity) => {
+    if(quantity >= 1) {
+      setCart(prev => prev.map((product) => {
+        if(product.productId == productId) {
+          return {...product, quantity : quantity};
+        }
+        return product;
+      }));
+    }
     // TODO
   };
 
@@ -69,6 +93,7 @@ export function useCart() {
   // [과제 6] 장바구니 전체 비우기
   // ============================================================
   const clearCart = () => {
+    setCart([]);
     // TODO
   };
 

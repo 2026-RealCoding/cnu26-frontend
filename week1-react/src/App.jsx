@@ -1,10 +1,15 @@
+import { useState } from 'react';
 import { useAuth } from './hooks/useAuth';
+import { useCart } from './hooks/useCart';
 import LoginForm from './components/LoginForm';
 import ProductList from './components/ProductList';
+import CartView from './components/CartView';
 import './index.css';
 
 export default function App() {
   const { user, isLoggedIn, login, logout } = useAuth();
+  const { cart, addToCart, removeFromCart, updateQuantity, clearCart } = useCart();
+  const [cartOpen, setCartOpen] = useState(false);
 
   return (
     <div className="app">
@@ -13,6 +18,9 @@ export default function App() {
         {isLoggedIn && (
           <div className="header-user">
             <span>안녕하세요, {user.name}님!</span>
+            <button onClick={() => setCartOpen((prev) => !prev)}>
+              🛒 ({cart.length})
+            </button>
             <button onClick={logout} className="btn-logout">
               로그아웃
             </button>
@@ -21,9 +29,18 @@ export default function App() {
       </header>
 
       <main className="main">
-        {/* isLoggedIn 값에 따라 LoginForm 또는 ProductList를 렌더링 */}
         {isLoggedIn ? (
-          <ProductList />
+          <>
+            {cartOpen && (
+              <CartView
+                cart={cart}
+                onUpdateQty={updateQuantity}
+                onRemove={removeFromCart}
+                onClear={clearCart}
+              />
+            )}
+            <ProductList onAddToCart={addToCart} />
+          </>
         ) : (
           <LoginForm onLogin={login} />
         )}

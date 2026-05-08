@@ -4,7 +4,8 @@ import ProductCard from './ProductCard';
 
 const DEFAULT_QUERY = '맥북';
 
-export default function ProductList() {
+
+export default function ProductList({ onAddToCart }) {
   // ============================================================
   // [실습 6-a] 아래 3가지 상태를 useState로 선언하세요 (
   // - products: 상품 목록 (초기값: 빈 배열 [])
@@ -92,7 +93,7 @@ export default function ProductList() {
           <div className="product-grid">
             {products.map((product) => (
               // key: 리스트 렌더링 시 React가 각 항목을 구분하는 고유 식별자
-              <ProductCard key={product.productId} product={product} />
+              <ProductCard key={product.productId} product={product} onAddToCart={onAddToCart} />
             ))}
           </div>
         </>

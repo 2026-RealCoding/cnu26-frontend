@@ -1,7 +1,7 @@
 // BE ShoppingItem 구조:
 // { title, link, image, lprice, hprice, mallName, productId, brand, maker, category1..4 }
 
-export default function ProductCard({ product }) {
+export default function ProductCard({ product, onAddToCart }) {
   // HTML 태그 제거 (<b>맥북</b> → 맥북)
   const cleanTitle = product.title.replace(/<[^>]+>/g, '');
   const price = product.lprice
@@ -29,6 +29,7 @@ export default function ProductCard({ product }) {
         {product.mallName && (
           <p className="product-mall">{product.mallName}</p>
         )}
+        <button onClick={() => onAddToCart(product)}>🛒 담기</button>
       </div>
     </div>
   );

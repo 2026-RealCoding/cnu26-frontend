@@ -37,19 +37,19 @@ export async function POST(request: NextRequest) {
   // ============================================================
 
   // BE API 미완성 시 Mock 응답 (임시)
-  const mockOrder = {
-    id: Date.now(),
-    productId,
-    productName,
-    price,
-    quantity,
-    createdAt: new Date().toISOString(),
-  };
+  // const mockOrder = {
+  //   id: Date.now(),
+  //   productId,
+  //   productName,
+  //   price,
+  //   quantity,
+  //   createdAt: new Date().toISOString(),
+  // };
 
-  console.log('주문 생성 (Mock):', mockOrder, '| token:', token.slice(0, 20) + '...');
-  return NextResponse.json(mockOrder, { status: 201 });
+  // console.log('주문 생성 (Mock):', mockOrder, '| token:', token.slice(0, 20) + '...');
+  // return NextResponse.json(mockOrder, { status: 201 });
 
-  /* 실제 BE 완성 후 아래 코드로 교체:
+  // 실제 BE 완성 후 아래 코드로 교체:
   const res = await fetch(`${BACKEND_URL}/orders`, {
     method: 'POST',
     headers: {
@@ -65,7 +65,7 @@ export async function POST(request: NextRequest) {
 
   const order = await res.json();
   return NextResponse.json(order, { status: 201 });
-  */
+  
 }
 
 // GET /api/orders - 내 주문 목록

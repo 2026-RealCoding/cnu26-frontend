@@ -37,9 +37,11 @@ export default async function ShopPage({
   // [실습 5-b] 병렬로 유저 정보와 상품 목록을 패칭하세요
   // 힌트: Promise.all([getMe(token), searchProducts(query)])
   // ============================================================
-  const [user, products] = await Promise.all([
-    getMe(token),
-    searchProducts(query),
+
+// searchProducts를 호출할 때 token을 넘겨줍니다.
+const [user, products] = await Promise.all([
+  getMe(token),
+  searchProducts(query, token), // token 추가!
   ]);
 
   return (

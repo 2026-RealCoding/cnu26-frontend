@@ -4,24 +4,6 @@ import ProductCard from './ProductCard';
 
 const DEFAULT_QUERY = '맥북';
 
-// ============================================================
-// [과제] App.jsx에서 onAddToCart prop을 받아 ProductCard로 전달하세요
-//
-// 1. props에 onAddToCart를 추가합니다
-//    export default function ProductList({ onAddToCart }) { ... }
-//
-// 2. ProductCard에 onAddToCart를 전달합니다
-//    <ProductCard key={product.productId} product={product} onAddToCart={onAddToCart} />
-//
-// 이것을 "props 내려주기(prop drilling)"라고 합니다.
-// App → ProductList → ProductCard 순서로 함수가 전달됩니다.
-// ============================================================
-export default function ProductList({ onAddToCart }) {
-  const [products, setProducts] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [query, setQuery] = useState(DEFAULT_QUERY);
-  const [inputValue, setInputValue] = useState(DEFAULT_QUERY);
 
   useEffect(() => {
     setLoading(true);

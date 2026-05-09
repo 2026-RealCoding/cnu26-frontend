@@ -17,6 +17,19 @@
 
 ### useEffect란?
 
+컴포넌트가 렌더링된 **후** 부수 효과(API 호출, 타이머 등)를 실행하는 훅이다.
+
+```js
+useEffect(() => {
+  // 실행할 부수 효과
+}, [의존성]);
+```
+
+| 의존성 배열 | 실행 시점 |
+|---|---|
+| 생략 | 매 렌더링마다 실행 (무한 루프 위험) |
+| `[]` | 마운트 시 한 번만 |
+| `[query]` | 마운트 + `query`가 바뀔 때마다 |
 
 ### 3가지 상태 관리
 
@@ -91,7 +104,7 @@ export default function ProductList() {
 
 **핵심 포인트:**
 - `loading`, `error`, `products` 세 상태로 UI의 세 가지 경우를 처리한다.
-
+- `key={product.productId}`: 리스트 렌더링 시 React가 각 항목을 구분하는 필수 속성.
 
 ---
 
@@ -117,3 +130,5 @@ npm run dev      # 개발 서버 시작
 ---
 
 ## 핵심 정리
+
+> **`useEffect`의 의존성 배열은 "이 값이 바뀔 때마다 다시 실행"을 선언적으로 표현한다. `loading/error/data` 3상태 패턴은 모든 비동기 데이터 패칭의 기본 구조다. Week 2(Next.js Server Component)에서는 이 패턴이 `async/await`으로 대체되어 로딩 상태 없이 데이터를 바로 받아 렌더링한다.**

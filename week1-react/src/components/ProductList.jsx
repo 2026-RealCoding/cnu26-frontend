@@ -16,7 +16,7 @@ const DEFAULT_QUERY = '맥북';
 // 이것을 "props 내려주기(prop drilling)"라고 합니다.
 // App → ProductList → ProductCard 순서로 함수가 전달됩니다.
 // ============================================================
-export default function ProductList() { // TODO: onAddToCart prop 추가
+export default function ProductList({ onAddToCart }) {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -65,7 +65,7 @@ export default function ProductList() { // TODO: onAddToCart prop 추가
               <ProductCard
                 key={product.productId}
                 product={product}
-                /* TODO: onAddToCart={onAddToCart} */
+                onAddToCart={onAddToCart}
               />
             ))}
           </div>

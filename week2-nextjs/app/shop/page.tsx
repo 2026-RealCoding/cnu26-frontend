@@ -39,7 +39,7 @@ export default async function ShopPage({
   // ============================================================
   const [user, products] = await Promise.all([
     getMe(token),
-    searchProducts(query),
+    searchProducts(query, 12, token),
   ]);
 
   return (

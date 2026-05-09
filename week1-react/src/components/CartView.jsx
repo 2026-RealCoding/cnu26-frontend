@@ -18,31 +18,62 @@ export default function CartView({
   onClear,
   onClose,
 }) {
+
   // ============================================================
   // [과제 7] 빈 장바구니 처리
   //
   // cart 배열이 비어있으면 "장바구니가 비어있습니다" 메시지를 보여주세요
   // ============================================================
-  // TODO
+  if (cart.length === 0) {
+    return (
+      <div className="cart-view">
+        <div className="cart-header">
+          <h2 className="cart-title">장바구니</h2>
+          <button onClick={onClose} className="btn-close">
+            닫기
+          </button>
+        </div>
+
+        <p className="empty-cart-msg">
+          장바구니가 비어있습니다
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div className="cart-view">
+
       {/* 헤더 */}
       <div className="cart-header">
-        <h2 className="cart-title">장바구니 ({cart.length}종)</h2>
-        <button onClick={onClose} className="btn-close">닫기</button>
+        <h2 className="cart-title">
+          장바구니 ({cart.length}종)
+        </h2>
+
+        <button onClick={onClose} className="btn-close">
+          닫기
+        </button>
       </div>
 
       {/* 상품 목록 */}
       <ul className="cart-list">
+
         {cart.map((item) => (
           <li key={item.productId} className="cart-item">
+
             {item.image && (
-              <img src={item.image} alt={item.title} className="cart-item-image" />
+              <img
+                src={item.image}
+                alt={item.title}
+                className="cart-item-image"
+              />
             )}
 
             <div className="cart-item-info">
-              <p className="cart-item-name">{item.title}</p>
+              <p className="cart-item-name">
+                {item.title}
+              </p>
+
               <p className="cart-item-price">
                 {Number(item.price).toLocaleString()}원
               </p>
@@ -54,20 +85,30 @@ export default function CartView({
                 - "+" 버튼: 현재 수량에서 1을 더한 값으로 onUpdateQty 호출
                 ============================================================ */}
             <div className="cart-item-quantity">
+
               <button
                 className="qty-btn"
-                onClick={() => {/* TODO */}}
+                onClick={() =>
+                  onUpdateQty(item.productId, item.quantity - 1)
+                }
                 disabled={item.quantity <= 1}
               >
                 -
               </button>
-              <span className="qty-value">{item.quantity}</span>
+
+              <span className="qty-value">
+                {item.quantity}
+              </span>
+
               <button
                 className="qty-btn"
-                onClick={() => {/* TODO */}}
+                onClick={() =>
+                  onUpdateQty(item.productId, item.quantity + 1)
+                }
               >
                 +
               </button>
+
             </div>
 
             <p className="cart-item-subtotal">
@@ -79,32 +120,49 @@ export default function CartView({
                 ============================================================ */}
             <button
               className="btn-remove"
-              onClick={() => {/* TODO */}}
+              onClick={() => onRemove(item.productId)}
             >
               ✕
             </button>
+
           </li>
         ))}
       </ul>
 
       {/* 합계 & 결제 */}
       <div className="cart-summary">
+
         <div className="cart-total">
           <span>총 결제 금액</span>
-          <strong>{totalPrice.toLocaleString()}원</strong>
+
+          <strong>
+            {totalPrice.toLocaleString()}원
+          </strong>
         </div>
 
         <div className="cart-actions">
-          <button className="btn-clear" onClick={onClear}>
+
+          <button
+            className="btn-clear"
+            onClick={onClear}
+          >
             전체 삭제
           </button>
+
           {/* ============================================================
               [과제 10 - 심화] 결제하기 버튼을 완성하세요
               - 클릭 시 장바구니를 비우고 완료 메시지를 표시하세요
               ============================================================ */}
-          <button className="btn-checkout" onClick={() => {/* TODO */}}>
+          <button
+            className="btn-checkout"
+            onClick={() => {
+              alert('결제가 완료되었습니다!');
+              onClear();
+            }}
+          >
             {totalPrice.toLocaleString()}원 결제하기
           </button>
+
         </div>
       </div>
     </div>

@@ -11,12 +11,21 @@
 //    (productId, title, image, price)
 // ============================================================
 
-export default function ProductCard({ product }) { // TODO: onAddToCart prop 추가
+export default function ProductCard({ product, onAddToCart }) {
   // HTML 태그 제거 (<b>맥북</b> → 맥북)
   const cleanTitle = product.title.replace(/<[^>]+>/g, '');
   const price = product.lprice
     ? `${Number(product.lprice).toLocaleString()}원`
     : '가격 정보 없음';
+
+  const handleAdd = () => {
+    onAddToCart?.({
+      productId: product.productId,
+      title: cleanTitle,
+      image: product.image,
+      price: Number(product.lprice) || 0,
+    });
+  };
 
   return (
     <div className="product-card">
@@ -42,7 +51,7 @@ export default function ProductCard({ product }) { // TODO: onAddToCart prop 추
         {/* TODO: onClick에 onAddToCart 호출 코드를 연결하세요 */}
         <button
           className="btn-add-cart"
-          onClick={() => {/* TODO */}}
+          onClick={handleAdd}
         >
           🛒 담기
         </button>

@@ -25,8 +25,14 @@ export function useCart() {
   // 참고: localStorage에는 문자열만 저장할 수 있어서
   //       저장 시 JSON.stringify, 읽기 시 JSON.parse가 필요합니다
   // ============================================================
-  const [cart, setCart] = useState([]); // TODO
+  const [cart, setCart] = useState(() => {
+    const saved = localStorage.getItem('cart');
+    return saved ? JSON.parse(saved) : [];
+  });
 
+  useEffect(() => {
+    localStorage.setItem('cart', JSON.stringify(cart));
+  }, [cart]);
   // ============================================================
   // [과제 2] cart가 바뀔 때마다 localStorage에 저장하세요
   //
@@ -44,7 +50,19 @@ export function useCart() {
   //   - 새 상품이면 → quantity: 1 로 추가
   // ============================================================
   const addToCart = (product) => {
-    // TODO
+    setCart((prevCart) => {
+      const existing = prevCart.find((item) => item.productId === product.productId);
+
+      if (existing) {
+        return prevCart.map((item) =>
+          item.productId === product.productId
+            ? { ...item, quantity: item.quantity + 1 }
+            : item
+        );
+      }
+
+      return [...prevCart, { ...product, quantity: 1 }];
+    });
   };
 
   // ============================================================
@@ -53,7 +71,9 @@ export function useCart() {
   // 조건: productId가 일치하는 아이템만 제거하세요
   // ============================================================
   const removeFromCart = (productId) => {
-    // TODO
+    setCart((prevCart) =>
+      prevCart.filter((item) => item.productId !== productId)
+    );
   };
 
   // ============================================================
@@ -61,15 +81,23 @@ export function useCart() {
   //
   // 조건: quantity가 1 미만이면 아무것도 하지 않습니다 (0개 방지)
   // ============================================================
-  const updateQuantity = (productId, quantity) => {
-    // TODO
+   const updateQuantity = (productId, quantity) => {
+    if (quantity < 1) return;
+
+    setCart((prevCart) =>
+      prevCart.map((item) =>
+        item.productId === productId
+          ? { ...item, quantity }
+          : item
+      )
+    );
   };
 
   // ============================================================
   // [과제 6] 장바구니 전체 비우기
   // ============================================================
   const clearCart = () => {
-    // TODO
+    setCart([]);
   };
 
   // 파생 값 — 직접 수정하지 마세요

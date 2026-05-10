@@ -24,6 +24,19 @@ export default function CartView({
   // cart 배열이 비어있으면 "장바구니가 비어있습니다" 메시지를 보여주세요
   // ============================================================
   // TODO
+  if (cart.length === 0){
+    return (
+      <div className="cart-view">
+        <div className="cart-header">
+          <h2 className="cart-title">장바구니 (0종)</h2>
+          <button onClick={onClose} className="btn-close">닫기</button>
+        </div>
+        <div className="empty-cart-message" style={{ padding: '20px', textAlign: 'center' }}>
+          장바구니가 비어있습니다
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="cart-view">
@@ -56,7 +69,7 @@ export default function CartView({
             <div className="cart-item-quantity">
               <button
                 className="qty-btn"
-                onClick={() => {/* TODO */}}
+                onClick={() => onUpdateQty(item.productId, item.quantity - 1)}
                 disabled={item.quantity <= 1}
               >
                 -
@@ -64,7 +77,7 @@ export default function CartView({
               <span className="qty-value">{item.quantity}</span>
               <button
                 className="qty-btn"
-                onClick={() => {/* TODO */}}
+                onClick={() => onUpdateQty(item.productId, item.quantity + 1)}
               >
                 +
               </button>
@@ -79,7 +92,7 @@ export default function CartView({
                 ============================================================ */}
             <button
               className="btn-remove"
-              onClick={() => {/* TODO */}}
+              onClick={() => onRemove(item.productId)}
             >
               ✕
             </button>
@@ -102,7 +115,12 @@ export default function CartView({
               [과제 10 - 심화] 결제하기 버튼을 완성하세요
               - 클릭 시 장바구니를 비우고 완료 메시지를 표시하세요
               ============================================================ */}
-          <button className="btn-checkout" onClick={() => {/* TODO */}}>
+          <button className="btn-checkout" 
+            onClick={() => {
+              onClear();
+              alert('결제가 완료되었습니다!');
+            }}
+          >
             {totalPrice.toLocaleString()}원 결제하기
           </button>
         </div>

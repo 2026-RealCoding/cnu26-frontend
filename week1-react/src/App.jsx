@@ -33,7 +33,7 @@ export default function App() {
                 - 담긴 상품 수(totalCount)를 뱃지로 표시하세요
                 ============================================================ */}
             <button className="btn-cart" onClick={() => setCartOpen(true)}>
-              🛒 {totalCount > 0 && <span className="cart-badge"></span>}
+              🛒 {totalCount > 0 && <span className="cart-badge">{totalCount}</span>}
             </button>
             <button onClick={logout} className="btn-logout">
               로그아웃

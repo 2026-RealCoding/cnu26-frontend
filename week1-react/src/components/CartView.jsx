@@ -18,12 +18,18 @@ export default function CartView({
   onClear,
   onClose,
 }) {
-  // ============================================================
-  // [과제 7] 빈 장바구니 처리
-  //
-  // cart 배열이 비어있으면 "장바구니가 비어있습니다" 메시지를 보여주세요
-  // ============================================================
-  // TODO
+  // 과제 7: 빈 장바구니 처리
+  if (cart.length === 0) {
+    return (
+      <div className="cart-view">
+        <div className="cart-header">
+          <h2 className="cart-title">장바구니 (0종)</h2>
+          <button onClick={onClose} className="btn-close">닫기</button>
+        </div>
+        <p className="cart-empty">장바구니가 비어있습니다</p>
+      </div>
+    );
+  }
 
   return (
     <div className="cart-view">
@@ -48,15 +54,11 @@ export default function CartView({
               </p>
             </div>
 
-            {/* ============================================================
-                [과제 8] 수량 조절 버튼의 onClick을 연결하세요
-                - "-" 버튼: 현재 수량에서 1을 뺀 값으로 onUpdateQty 호출
-                - "+" 버튼: 현재 수량에서 1을 더한 값으로 onUpdateQty 호출
-                ============================================================ */}
+            {/* 과제 8: 수량 조절 버튼 연결 */}
             <div className="cart-item-quantity">
               <button
                 className="qty-btn"
-                onClick={() => {/* TODO */}}
+                onClick={() => onUpdateQty(item.productId, item.quantity - 1)}
                 disabled={item.quantity <= 1}
               >
                 -
@@ -64,7 +66,7 @@ export default function CartView({
               <span className="qty-value">{item.quantity}</span>
               <button
                 className="qty-btn"
-                onClick={() => {/* TODO */}}
+                onClick={() => onUpdateQty(item.productId, item.quantity + 1)}
               >
                 +
               </button>
@@ -74,12 +76,10 @@ export default function CartView({
               {(item.price * item.quantity).toLocaleString()}원
             </p>
 
-            {/* ============================================================
-                [과제 9] 삭제 버튼의 onClick을 연결하세요
-                ============================================================ */}
+            {/* 과제 9: 삭제 버튼 연결 */}
             <button
               className="btn-remove"
-              onClick={() => {/* TODO */}}
+              onClick={() => onRemove(item.productId)}
             >
               ✕
             </button>
@@ -98,11 +98,14 @@ export default function CartView({
           <button className="btn-clear" onClick={onClear}>
             전체 삭제
           </button>
-          {/* ============================================================
-              [과제 10 - 심화] 결제하기 버튼을 완성하세요
-              - 클릭 시 장바구니를 비우고 완료 메시지를 표시하세요
-              ============================================================ */}
-          <button className="btn-checkout" onClick={() => {/* TODO */}}>
+          {/* 과제 10: 결제하기 버튼 — 장바구니 비우고 완료 메시지 표시 */}
+          <button
+            className="btn-checkout"
+            onClick={() => {
+              onClear();
+              alert('결제가 완료되었습니다!');
+            }}
+          >
             {totalPrice.toLocaleString()}원 결제하기
           </button>
         </div>

@@ -25,7 +25,10 @@ export function useCart() {
   // 참고: localStorage에는 문자열만 저장할 수 있어서
   //       저장 시 JSON.stringify, 읽기 시 JSON.parse가 필요합니다
   // ============================================================
-  const [cart, setCart] = useState([]); // TODO
+  const [cart, setCart] = useState(() => {
+    const savedCart = localStorage.getItem('cart');
+    return savedCart ? JSON.parse(savedCart) : [];
+  }); // TODO
 
   // ============================================================
   // [과제 2] cart가 바뀔 때마다 localStorage에 저장하세요
@@ -35,6 +38,9 @@ export function useCart() {
   //   - useEffect와 의존성 배열을 활용하세요
   // ============================================================
   // TODO
+  useEffect(() => {
+    localStorage.setItem('cart', JSON.stringify(cart));
+  }, [cart]);
 
   // ============================================================
   // [과제 3] 장바구니에 상품 추가
@@ -45,6 +51,21 @@ export function useCart() {
   // ============================================================
   const addToCart = (product) => {
     // TODO
+    setCart((prevCart) => {
+      const existingItem = prevCart.find(
+        (item) => item.productId === product.productId
+      );
+
+      if (existingItem) {
+        return prevCart.map((item) =>
+          item.productId === product.productId
+            ? { ...item, quantity: item.quantity + 1 }
+            : item
+        );
+      }
+
+      return [...prevCart, { ...product, quantity: 1 }];
+    });
   };
 
   // ============================================================
@@ -54,6 +75,9 @@ export function useCart() {
   // ============================================================
   const removeFromCart = (productId) => {
     // TODO
+    setCart((prevCart) =>
+      prevCart.filter((item) => item.productId !== productId)
+    );
   };
 
   // ============================================================
@@ -63,6 +87,15 @@ export function useCart() {
   // ============================================================
   const updateQuantity = (productId, quantity) => {
     // TODO
+    if (quantity < 1) return;
+
+    setCart((prevCart) =>
+      prevCart.map((item) =>
+        item.productId === productId
+          ? { ...item, quantity }
+          : item
+      )
+    );
   };
 
   // ============================================================
@@ -70,6 +103,7 @@ export function useCart() {
   // ============================================================
   const clearCart = () => {
     // TODO
+    setCart([]);
   };
 
   // 파생 값 — 직접 수정하지 마세요

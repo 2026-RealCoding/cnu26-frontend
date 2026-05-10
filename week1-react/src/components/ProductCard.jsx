@@ -42,7 +42,14 @@ export default function ProductCard({ product }) { // TODO: onAddToCart prop 추
         {/* TODO: onClick에 onAddToCart 호출 코드를 연결하세요 */}
         <button
           className="btn-add-cart"
-          onClick={() => {/* TODO */}}
+           onClick={() =>
+            onAddToCart({
+              productId: product.productId,
+              title: cleanTitle,
+              image: product.image,
+              price: Number(product.lprice),
+            })
+          }
         >
           🛒 담기
         </button>
